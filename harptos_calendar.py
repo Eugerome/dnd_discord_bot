@@ -12,8 +12,11 @@ class Calendar:
         self.leap_cycle_days = (self.leap_year_freq - 1) * self.year_len + self.leap_year_len
         self.day_of_year = None 
         self.leap_year = None
+        self.current_month = None
         # run current_date
         self.today = self.current_date(self.current_day)
+        with open("events.json") as json_file:
+            self.events = json.load(json_file)
 
     @staticmethod
     def format_days(month_dict, day):
@@ -49,6 +52,34 @@ class Calendar:
             if remainder > days_in_month:
                 remainder -= days_in_month
             else:
+                self.current_month = month
+                return (years_so_far, Calendar.format_days(month, remainder))
+
+    def get_date(self, n_days):
+        """Get day (combine with current date)"""
+        leap_year = False
+        full_leap_cycles = n_days // self.leap_cycle_days
+        remainder = n_days % self.leap_cycle_days
+        years_so_far = int(full_leap_cycles*4)
+        if remainder == 0:
+            last_month_year = self.months[-1]
+            leap_year = True
+            return (years_so_far, Calendar.format_days(last_month_year, last_month_year.get("days")))
+        counter = 1
+        while remainder > self.year_len:
+            if counter == self.leap_year_freq:
+                leap_year = True
+                break
+            remainder -= self.year_len
+            years_so_far += 1
+            counter += 1
+        for month in self.months:
+            days_in_month = month.get("days")
+            if month.get("leap") and leap_year is False:
+                continue
+            if remainder > days_in_month:
+                remainder -= days_in_month
+            else:
                 return (years_so_far, Calendar.format_days(month, remainder))
 
     def current_moons(self, n_days):
@@ -77,7 +108,11 @@ class Calendar:
             moon_cycle_emo = moon[2][1]
             formatted_string += f"{moon_name}: Day {moon_days} of cycle in the {moon_cycle_emo}  ({moon_cycle_str}) phase\n"
         return formatted_string
-            
+
+    def days_since_start(self):
+        """Returns how many days have passed since start date."""
+        return self.current_day - self.first_day
+
     def today_as_str(self):
         year, day = self.today
         return f"Today is {day}, Year {self.start_year + year}"
@@ -108,3 +143,24 @@ class Calendar:
             days_in_year = self.year_len
         days_left = days_in_year - self.day_of_year + self.holidays[0].get("date")
         return (days_left, self.holidays[0])
+
+    def create_custom_event(self, day, name, notes):
+        """Creates a custom event."""
+        year, date = self.get_date(day)
+        event_dict = {
+            "day" : day - self.first_day + 1,
+            "name": name,
+            "notes": notes,
+            "date": f"{date.title()}, Year {self.start_year + year}"
+        }
+        self.events.append(event_dict)
+        self.events = sorted(self.events, key = lambda i: i['day'])
+        with open("events.json", 'w') as f:
+            json.dump(self.events, f, indent=4)
+        return event_dict
+
+    def get_custom_events(self, n_events):
+        """Returns n recent events."""
+        if len(self.events) <= n_events:
+            return self.events
+        return self.events[-1*n_events]

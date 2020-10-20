@@ -43,6 +43,7 @@ async def today(ctx):
     await ctx.send(message)
 
 @client.command()
+@commands.has_permissions(administrator=True)
 async def days(ctx, *, days):
     try:
         days = int(days)
@@ -54,9 +55,42 @@ async def days(ctx, *, days):
     await ctx.send(f"Current date changed!\n {calendar.today_as_str()}")
 
 @client.command()
-async def moon(ctx, *, days=calendar.current_day):
+async def moon(ctx, *, days=None):
+    if not days:
+        days = calendar.current_day
     message = calendar.string_moon(calendar.current_moons(days))
     await ctx.send(message)
+
+@client.command()
+async def month(ctx):
+    month = calendar.current_month
+    name = month.get("name")
+    alternative = month.get("alternative")
+    sign = month.get("sign")
+    holidays = month.get("holidays")
+    days = month.get("days")
+    message = f"It is now the {name}{' also known as ' + alternative if alternative else ''}.\n"
+    message += f"The {'day' if days == 1 else 'month'} is dedicated to the Sign of the {sign.title()}.\n"
+    if days == 1:
+        message += "The holiday is celebrated in most regions"
+    else:
+        message += f"The month has {days} days and has "
+        if holidays:
+            if len(holidays) == 1:
+                message += "one major celebration.\n"
+            else:
+                message += f"{len(holidays)} major celebrations.\n"
+        else:
+            message += "no major celebrations.\n"
+    if holidays:
+        message += "**Celebrations**:\n"
+        for key, value in holidays.items():
+            message += f"{key} - Day {value}"
+    await ctx.send(message)
+
+@client.command()
+async def howlong(ctx):
+    await ctx.send(f"It has been {calendar.days_since_start()} days since your adventure began.")
 
 @client.command()
 async def holiday(ctx):
@@ -66,8 +100,23 @@ async def holiday(ctx):
     else:
         await ctx.send(f"The closest holiday is the **{holiday.get('name')}** in {days} days")
 
-# @client.command()
-# async def clear(ctx, amount=10):
-#     await ctx.channel.purge(limit=amount)
+@client.command()
+async def remindme(ctx, n_events=1):
+    events = calendar.get_custom_events(n_events=n_events)
+    message = ""
+    for event in events:
+        message += f"- {event.get('date')} - {event.get('name')} ({event.get('notes')})\n"
+    await ctx.send(message)
+
+@client.command()
+async def add_event(ctx, name, notes, day=0):
+    day = calendar.current_day + day -1
+    event = calendar.create_custom_event(day=day, name=name, notes=notes)
+    await ctx.send(f"Event Created!\n{event.get('date')} - {event.get('name')} ({event.get('notes')})\n")
+
+@client.command()
+@commands.has_permissions(administrator=True)
+async def clear_all(ctx, amount=1):
+    await ctx.channel.purge(limit=amount)
 
 client.run(token)
