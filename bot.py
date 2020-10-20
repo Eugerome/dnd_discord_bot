@@ -38,9 +38,9 @@ async def on_ready():
 
 @client.command()
 async def today(ctx):
-    year, day = calendar.current_date(calendar.current_day)
+    message = calendar.today_as_str()
     logging.info("Sending current date")
-    await ctx.send(f"Year {calendar.start_year + year}, {day}")
+    await ctx.send(message)
 
 @client.command()
 async def days(ctx, *, days):
@@ -51,6 +51,15 @@ async def days(ctx, *, days):
         await ctx.send(f"Sorry, could not understand '{days}'")
     calendar.add_days(days)
     logging.info("Days added successfully")
-    await ctx.send("Current date changed!")
+    await ctx.send(f"Current date changed!\n {calendar.today_as_str()}")
+
+@client.command()
+async def moon(ctx, *, days=calendar.current_day):
+    message = calendar.string_moon(calendar.current_moons(days))
+    await ctx.send(message)
+
+# @client.command()
+# async def clear(ctx, amount=10):
+#     await ctx.channel.purge(limit=amount)
 
 client.run(token)

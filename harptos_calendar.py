@@ -17,7 +17,7 @@ class Calendar:
         alternate_name = month_dict.get('alternate')
         if month_dict.get('days') == 1:
             return f"{name}"
-        return f"Day {day} of {name}, {alternate_name}"
+        return f"day {day} of {name}, {alternate_name}"
 
     def current_date(self, n_days):
         """Get current date."""
@@ -47,7 +47,7 @@ class Calendar:
 
     def current_moons(self, n_days):
         """Get current moon phase."""
-        moon_phases = [("New Moon", 0), ("Waning Crescent", 1), ("Third Quarter", 2), ("Waning Gibbous", 3), ("Full Moon", 4), ("Waxing Gibbous", 5), ("First Quarter", 6), ("Waxing Crescent", 7)]
+        moon_phases = [("New Moon", "🌑"), ("Waning Crescent", "🌘"), ("Third Quarter", "🌗"), ("Waning Gibbous", "🌖"), ("Full Moon", "🌕"), ("Waxing Gibbous", "🌔"), ("First Quarter", "🌓"), ("Waxing Crescent", "🌒")]
         phase_list = []
         for key, value in self.lunar_cyc.items():
             incomplete_phase = n_days % value
@@ -60,6 +60,22 @@ class Calendar:
                 phase = 7
             phase_list.append((key, incomplete_phase, moon_phases[phase]))
         return phase_list
+
+    def string_moon(self, phase_list):
+        """Return moon phases as string"""
+        formatted_string = ""
+        for moon in phase_list:
+            moon_name = moon[0]
+            moon_days = moon[1]
+            moon_cycle_str = moon[2][0]
+            moon_cycle_emo = moon[2][1]
+            formatted_string += f"{moon_name}: Day {moon_days} of cycle in the {moon_cycle_emo}  ({moon_cycle_str}) phase\n"
+        return formatted_string
+            
+
+    def today_as_str(self):
+        year, day = self.current_date(self.current_day)
+        return f"Today is {day}, Year {self.start_year + year}"
 
     def add_days(self, n_days):
         self.current_day += n_days
