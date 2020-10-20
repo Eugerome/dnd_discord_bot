@@ -58,6 +58,14 @@ async def moon(ctx, *, days=calendar.current_day):
     message = calendar.string_moon(calendar.current_moons(days))
     await ctx.send(message)
 
+@client.command()
+async def holiday(ctx):
+    days, holiday = calendar.closest_holiday()
+    if days == 0:
+        await ctx.send(f"Today is the **{holiday.get('name')}**!")
+    else:
+        await ctx.send(f"The closest holiday is the **{holiday.get('name')}** in {days} days")
+
 # @client.command()
 # async def clear(ctx, amount=10):
 #     await ctx.channel.purge(limit=amount)

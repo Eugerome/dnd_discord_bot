@@ -9,7 +9,11 @@ class Calendar:
             calendar_dict = json.load(json_file)
         for key, value in calendar_dict.items():
             setattr(self, key, value)
-        self.leap_cycle_days = (self.gap_year_freq - 1) * self.year_len + self.gap_year_len
+        self.leap_cycle_days = (self.leap_year_freq - 1) * self.year_len + self.leap_year_len
+        self.day_of_year = None 
+        self.leap_year = None
+        # run current_date
+        self.today = self.current_date(self.current_day)
 
     @staticmethod
     def format_days(month_dict, day):
@@ -26,19 +30,21 @@ class Calendar:
         years_so_far = int(full_leap_cycles*4)
         if remainder == 0:
             last_month_year = self.months[-1]
+            self.leap_year = True
+            self.day_of_year =  remainder
             return (years_so_far, Calendar.format_days(last_month_year, last_month_year.get("days")))
         counter = 1
-        gap_year = False
         while remainder > self.year_len:
-            if counter == self.gap_year_freq:
-                gap_year = True
+            if counter == self.leap_year_freq:
+                self.leap_year = True
                 break
             remainder -= self.year_len
             years_so_far += 1
             counter += 1
+        self.day_of_year = remainder
         for month in self.months:
             days_in_month = month.get("days")
-            if month.get("leap") and gap_year is False:
+            if month.get("leap") and self.leap_year is False:
                 continue
             if remainder > days_in_month:
                 remainder -= days_in_month
@@ -72,9 +78,8 @@ class Calendar:
             formatted_string += f"{moon_name}: Day {moon_days} of cycle in the {moon_cycle_emo}  ({moon_cycle_str}) phase\n"
         return formatted_string
             
-
     def today_as_str(self):
-        year, day = self.current_date(self.current_day)
+        year, day = self.today
         return f"Today is {day}, Year {self.start_year + year}"
 
     def add_days(self, n_days):
@@ -84,3 +89,22 @@ class Calendar:
             data["current_day"] = self.current_day
         with open("calendar.json", 'w') as f:
             json.dump(data, f, indent=4)
+        self.today = self.current_date(self.current_day)
+
+    def closest_holiday(self):
+        """Get closest upcomming holiday."""
+        leap_adjust = 0
+        for holiday in self.holidays:
+            if holiday.get("name") == "Shieldmeet" and self.leap_year is False:
+                leap_adjust = 1
+            adjusted_date = holiday.get("date") - leap_adjust
+            if self.day_of_year > adjusted_date:
+                continue
+            else:
+                return (adjusted_date - self.day_of_year, holiday)
+        if self.leap_year:
+            days_in_year = self.leap_year_len
+        else:
+            days_in_year = self.year_len
+        days_left = days_in_year - self.day_of_year + self.holidays[0].get("date")
+        return (days_left, self.holidays[0])
