@@ -1,19 +1,25 @@
 """Randomise weather"""
 import json
 import random
+import time
 
 with open("weather.json") as json_file:
     weather_dict = json.load(json_file)
+with open("weather_records.json") as json_file:
+    weather_records = json.load(json_file)
+
 
 class DailyForecast:
     """Create a forecast for the day."""
 
-    def __init__(self, day_of_year):
+    def __init__(self, day, day_of_year):
+        self.day = day
         self.season = self.get_season(day_of_year)
         self.season_patterns = weather_dict.get("season_patterns").get(self.season)
         self.avg_temp = self.generate_temperature(self.season_patterns.get("temperature"))
         self.forecast_string = ""
         self.get_string()
+        self.save_temp()
         
 
     def get_season(self, day_of_year):
@@ -23,15 +29,25 @@ class DailyForecast:
                 return season
 
     def generate_temperature(self, temp_range):
-        return random.randrange(temp_range[0], temp_range[-1])
+        temperature = random.randrange(temp_range[0], temp_range[-1])
+        previous_record = weather_records.get(str(self.day - 1), None)
+        if previous_record:
+            previous_temperature = previous_record.get("temp")
+            if temperature < previous_temperature:
+                return int(previous_temperature - random.randrange(1, 3))
+            else:
+                return int(previous_temperature + random.randrange(2, 4))
+        return temperature
 
     def get_string(self):
         for time_of_day, temperature_mod in weather_dict.get("day_time").items():
             forecast = Forecast(time_of_day, self.avg_temp, temperature_mod, self.season_patterns)
             self.forecast_string += f"{forecast.get_string()}\n"
 
-    def save_temp():
-        pass
+    def save_temp(self):
+        weather_records[str(self.day)] = {"temp": self.avg_temp, "forecast": self.forecast_string}
+        with open("weather_records.json", 'w') as f:
+            json.dump(weather_records, f, indent=4)
 
 class Forecast():
 
@@ -89,5 +105,6 @@ class Forecast():
         """Returns formatted string."""
         return f"{self.time_of_day.title()}: {self.temperature}°C, {self.sky.title()}, {self.precipitation.title()}, {self.wind.title()}"
 
-day = DailyForecast(1)
-import pdb; pdb.set_trace()
+
+for i in range(1, 366):
+    DailyForecast(i, i)
