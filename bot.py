@@ -5,6 +5,7 @@ import json
 from discord.ext import commands
 
 from harptos_calendar import Calendar
+from weather import *
 
 calendar = Calendar()
 
@@ -100,19 +101,34 @@ async def holiday(ctx):
     else:
         await ctx.send(f"The closest holiday is the **{holiday.get('name')}** in {days} days")
 
-@client.command()
-async def remindme(ctx, n_events=1):
-    events = calendar.get_custom_events(n_events=n_events)
-    message = ""
-    for event in events:
-        message += f"- {event.get('date')} - {event.get('name')} ({event.get('notes')})\n"
-    await ctx.send(message)
+### events
+
+# @client.command()
+# async def remindme(ctx, n_events=1):
+#     events = calendar.get_custom_events(n_events=n_events)
+#     message = ""
+#     for event in events:
+#         message += f"- {event.get('date')} - {event.get('name')} ({event.get('notes')})\n"
+#     await ctx.send(message)
+
+# @client.command()
+# async def add_event(ctx, name, notes, day=0):
+#     day = calendar.current_day + day -1
+#     event = calendar.create_custom_event(day=day, name=name, notes=notes)
+#     await ctx.send(f"Event Created!\n{event.get('date')} - {event.get('name')} ({event.get('notes')})\n")
+
+### weather
 
 @client.command()
-async def add_event(ctx, name, notes, day=0):
-    day = calendar.current_day + day -1
-    event = calendar.create_custom_event(day=day, name=name, notes=notes)
-    await ctx.send(f"Event Created!\n{event.get('date')} - {event.get('name')} ({event.get('notes')})\n")
+@commands.has_permissions(administrator=True)
+async def weather(ctx, *, days=0):
+    # check if already generated
+    message = weather_records.get(str(calendar.current_day + days), None)
+    if message:
+        message = message.get("forecast")
+    else:
+        message = DailyForecast(calendar.current_day + days, calendar.day_of_year + days).forecast_string
+    await ctx.send(message)
 
 @client.command()
 @commands.has_permissions(administrator=True)

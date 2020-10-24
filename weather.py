@@ -104,7 +104,3 @@ class Forecast():
     def get_string(self):
         """Returns formatted string."""
         return f"{self.time_of_day.title()}: {self.temperature}°C, {self.sky.title()}, {self.precipitation.title()}, {self.wind.title()}"
-
-
-for i in range(1, 366):
-    DailyForecast(i, i)
