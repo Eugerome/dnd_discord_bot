@@ -6,6 +6,7 @@ from discord.ext import commands
 
 from harptos_calendar import Calendar
 from weather import *
+from random_encounters import *
 
 calendar = Calendar()
 
@@ -129,6 +130,15 @@ async def weather(ctx, *, days=0):
     else:
         message = DailyForecast(calendar.current_day + days, calendar.day_of_year + days).forecast_string
     await ctx.send(message)
+
+### random encounters
+@client.command()
+@commands.has_permissions(administrator=True)
+async def encounter(ctx, *, confirm=None):
+    if not confirm:
+        await ctx.send(select_encounter())
+    else:
+        await ctx.send(use_encounter())
 
 @client.command()
 @commands.has_permissions(administrator=True)
