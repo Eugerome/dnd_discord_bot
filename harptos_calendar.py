@@ -15,8 +15,6 @@ class Calendar:
         self.current_month = None
         # run current_date
         self.today = self.current_date(self.current_day)
-        with open("events.json") as json_file:
-            self.events = json.load(json_file)
 
     @staticmethod
     def format_days(month_dict, day):

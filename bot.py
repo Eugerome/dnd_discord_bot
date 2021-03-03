@@ -24,11 +24,6 @@ with open('token.txt', 'r') as reader:
     token = reader.read()
     logging.info("Token Retrieved")
 
-# import settings
-with open("settings.json") as json_file:
-    settings = json.load(json_file)
-    logging.info("Settings Retrieved")
-
 # setup command prefix
 client = commands.Bot(command_prefix=".")
 
