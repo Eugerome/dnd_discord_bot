@@ -1,4 +1,8 @@
+**/__pycache__
+**/.devcontainer
 token.txt
 bot.log
 settings.json
 calendar.json
+events.json
+social_encounters.json
