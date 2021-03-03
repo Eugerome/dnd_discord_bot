@@ -82,10 +82,10 @@ class Calendar:
 
     def current_moons(self, n_days):
         """Get current moon phase."""
-        moon_phases = [("New Moon", "🌑"), ("Waning Crescent", "🌘"), ("Third Quarter", "🌗"), ("Waning Gibbous", "🌖"), ("Full Moon", "🌕"), ("Waxing Gibbous", "🌔"), ("First Quarter", "🌓"), ("Waxing Crescent", "🌒")]
+        moon_phases = [("Full Moon", "🌕"), ("Waxing Gibbous", "🌔"), ("First Quarter", "🌓"), ("Waxing Crescent", "🌒"), ("New Moon", "🌑"), ("Waning Crescent", "🌘"), ("Third Quarter", "🌗"), ("Waning Gibbous", "🌖")]
         phase_list = []
         for key, value in self.lunar_cyc.items():
-            incomplete_phase = n_days % value
+            incomplete_phase = int(n_days) % value
             if incomplete_phase == 0:
                 incomplete_phase = value
             phase_length = int(value/len(moon_phases))
