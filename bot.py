@@ -102,22 +102,6 @@ async def holiday(ctx):
     else:
         await ctx.send(f"The closest holiday is the **{holiday.get('name')}** in {days} days")
 
-### events
-
-# @client.command()
-# async def remindme(ctx, n_events=1):
-#     events = calendar.get_custom_events(n_events=n_events)
-#     message = ""
-#     for event in events:
-#         message += f"- {event.get('date')} - {event.get('name')} ({event.get('notes')})\n"
-#     await ctx.send(message)
-
-# @client.command()
-# async def add_event(ctx, name, notes, day=0):
-#     day = calendar.current_day + day -1
-#     event = calendar.create_custom_event(day=day, name=name, notes=notes)
-#     await ctx.send(f"Event Created!\n{event.get('date')} - {event.get('name')} ({event.get('notes')})\n")
-
 ### weather
 
 @client.command()
@@ -130,19 +114,5 @@ async def weather(ctx, *, days=0):
     else:
         message = DailyForecast(calendar.current_day + days, calendar.day_of_year + days).forecast_string
     await ctx.send(message)
-
-### random encounters
-@client.command()
-@commands.has_permissions(administrator=True)
-async def encounter(ctx, *, confirm=None):
-    if not confirm:
-        await ctx.send(select_encounter())
-    else:
-        await ctx.send(use_encounter())
-
-@client.command()
-@commands.has_permissions(administrator=True)
-async def clear_all(ctx, amount=1):
-    await ctx.channel.purge(limit=amount)
 
 client.run(token)
