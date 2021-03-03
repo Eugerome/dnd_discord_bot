@@ -84,16 +84,20 @@ class Calendar:
         """Get current moon phase."""
         moon_phases = [("Full Moon", "🌕"), ("Waxing Gibbous", "🌔"), ("First Quarter", "🌓"), ("Waxing Crescent", "🌒"), ("New Moon", "🌑"), ("Waning Crescent", "🌘"), ("Third Quarter", "🌗"), ("Waning Gibbous", "🌖")]
         phase_list = []
+        # convert days to minutes
+        n_minutes = int(n_days)*24*60
         for key, value in self.lunar_cyc.items():
-            incomplete_phase = int(n_days) % value
+            # the key is the moon and the value is the cycle in minutes
+            incomplete_phase = int(n_minutes) % value
             if incomplete_phase == 0:
+                # then 
                 incomplete_phase = value
             phase_length = int(value/len(moon_phases))
             phase = incomplete_phase // phase_length
             phase = int(phase)
             if phase == 8:
                 phase = 7
-            phase_list.append((key, incomplete_phase, moon_phases[phase]))
+            phase_list.append((key, moon_phases[phase]))
         return phase_list
 
     def string_moon(self, phase_list):
@@ -101,10 +105,10 @@ class Calendar:
         formatted_string = ""
         for moon in phase_list:
             moon_name = moon[0]
-            moon_days = moon[1]
+            # moon_days = moon[1]
             moon_cycle_str = moon[2][0]
             moon_cycle_emo = moon[2][1]
-            formatted_string += f"{moon_name}: Day {moon_days} of cycle in the {moon_cycle_emo}  ({moon_cycle_str}) phase\n"
+            formatted_string += f"{moon_name} is in the {moon_cycle_emo}  ({moon_cycle_str}) phase\n"
         return formatted_string
 
     def days_since_start(self):
