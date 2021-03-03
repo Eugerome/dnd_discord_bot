@@ -9,7 +9,7 @@ services:
             - ..:/dnd_discord_bot
         ports:
             - "6543:6543"
-        command: /bin/sh -c 'cd dnd_discord_bot && pip3 install discord.py && while sleep 1000; do :; done'
+        command: /bin/sh -c 'cd dnd_discord_bot && pip3 install discord && while sleep 1000; do :; done'
 
         
 

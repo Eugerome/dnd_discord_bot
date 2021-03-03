@@ -6,7 +6,6 @@ from discord.ext import commands
 
 from harptos_calendar import Calendar
 from weather import *
-from random_encounters import *
 
 calendar = Calendar()
 
