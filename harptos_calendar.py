@@ -1,5 +1,5 @@
 import json
-from math import floor
+from math import floor, ceil
 
 
 class Calendar:
@@ -84,7 +84,7 @@ class Calendar:
     def current_moons(self, n_days):
         """Get current moon phase."""
         moon_phases = [("Full Moon", "🌕"), ("Waxing Gibbous", "🌔"), ("First Quarter", "🌓"), ("Waxing Crescent", "🌒"), ("New Moon", "🌑"), ("Waning Crescent", "🌘"), ("Third Quarter", "🌗"), ("Waning Gibbous", "🌖")]
-        phase_list = []
+        phase_dict = {}
         # convert days to minutes
         n_minutes = floor(n_days)*24*60
         for key, value in self.lunar_cyc.items():
@@ -92,24 +92,30 @@ class Calendar:
             incomplete_phase = floor(n_minutes) % value
             if incomplete_phase == 0:
                 # then 
-                phase_list.append((key, moon_phases[0]))
+                phase_dict[key] = {
+                    "name": moon_phases[0][0],
+                    "emoji": moon_phases[0][1],
+                    "next_full": ceil((value-incomplete_phase)/(24*60))
+                }
                 continue
             phase_length = floor(value/len(moon_phases))
             phase = incomplete_phase // phase_length
             phase = floor(phase)
             if phase == 8:
                 phase = 7
-            phase_list.append((key, moon_phases[phase]))
-        return phase_list
+            # days until next full moon
+            phase_dict[key] = {
+                "name": moon_phases[phase][0],
+                "emoji": moon_phases[phase][1],
+                "next_full": ceil((value-incomplete_phase)/(24*60))
+            }
+        return phase_dict
 
-    def string_moon(self, phase_list):
+    def string_moon(self, phase_dict):
         """Return moon phases as string"""
         formatted_string = ""
-        for moon in phase_list:
-            moon_name = moon[0]
-            moon_cycle_str = moon[1][0]
-            moon_cycle_emo = moon[1][1]
-            formatted_string += f"{moon_name} is in the {moon_cycle_emo}  ({moon_cycle_str}) phase\n"
+        for key, value in phase_dict.items():
+            formatted_string += f"* {key} is in the {value['name']} {value['emoji']} phase. It is {value['next_full']} days until the next Full Moon.\n"
         return formatted_string
 
     def days_since_start(self):
