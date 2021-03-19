@@ -145,24 +145,3 @@ class Calendar:
             days_in_year = self.year_len
         days_left = days_in_year - self.day_of_year + self.holidays[0].get("date")
         return (days_left, self.holidays[0])
-
-    def create_custom_event(self, day, name, notes):
-        """Creates a custom event."""
-        year, date = self.get_date(day)
-        event_dict = {
-            "day" : day - self.first_day + 1,
-            "name": name,
-            "notes": notes,
-            "date": f"{date.title()}, Year {self.start_year + year}"
-        }
-        self.events.append(event_dict)
-        self.events = sorted(self.events, key = lambda i: i['day'])
-        with open("events.json", 'w') as f:
-            json.dump(self.events, f, indent=4)
-        return event_dict
-
-    def get_custom_events(self, n_events):
-        """Returns n recent events."""
-        if len(self.events) <= n_events:
-            return self.events
-        return self.events[-1*n_events]
