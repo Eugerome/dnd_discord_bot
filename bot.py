@@ -30,8 +30,8 @@ client = commands.Bot(command_prefix=".")
 async def on_ready():
     """Run on Start"""
     logging.info("Bot is Ready")
-    for guild in client.guilds:
-        logging.info(guild.id)
+    # for guild in client.guilds:
+    #     logging.info(guild.id)
     # create DB for existing guilds
     # for guild in client.guilds:
     #     guild = Guild(guild.id)
@@ -47,17 +47,18 @@ async def today(ctx):
     logging.info("Sending current date")
     await ctx.send(message)
 
-# @client.command()
-# @commands.has_permissions(administrator=True)
-# async def days(ctx, *, days):
-#     try:
-#         days = int(days)
-#     except:
-#         logging.info("Non int passed")
-#         await ctx.send(f"Sorry, could not understand '{days}'")
-#     calendar.add_days(days)
-#     logging.info("Days added successfully")
-#     await ctx.send(f"Current date changed!\n {calendar.today_as_str()}")
+@client.command()
+@commands.has_permissions(administrator=True)
+async def days(ctx, *, days):
+    try:
+        days = int(days)
+    except:
+        logging.info("Non int passed")
+        await ctx.send(f"Sorry, could not understand '{days}'")
+    calendar = Calendar(ctx.guild.id)
+    calendar.add_days(days)
+    logging.info("Days added successfully")
+    await ctx.send(f"Current date changed!\n {calendar.day_as_str()}")
 
 @client.command()
 async def moon(ctx, *, days=0):

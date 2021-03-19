@@ -149,12 +149,9 @@ class Calendar(object):
         
     def add_days(self, n_days):
         self.current_day += n_days
-        with open("data/harptos_calendar.json","r+") as json_file:
-            data = json.load(json_file)
-            data["current_day"] = self.current_day
-        with open("data/harptos_calendar.json", 'w') as f:
-            json.dump(data, f, indent=4)
-        self.today = self.current_date(self.current_day)
+        guild = session.query(Guild).filter_by(guild=self.guild).first()
+        guild.current_day = self.current_day
+        session.commit()
 
     def closest_holiday(self):
         """Get closest upcomming holiday."""
