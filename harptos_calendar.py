@@ -1,4 +1,5 @@
 import json
+from math import floor
 
 
 class Calendar:
@@ -85,16 +86,17 @@ class Calendar:
         moon_phases = [("Full Moon", "🌕"), ("Waxing Gibbous", "🌔"), ("First Quarter", "🌓"), ("Waxing Crescent", "🌒"), ("New Moon", "🌑"), ("Waning Crescent", "🌘"), ("Third Quarter", "🌗"), ("Waning Gibbous", "🌖")]
         phase_list = []
         # convert days to minutes
-        n_minutes = int(n_days)*24*60
+        n_minutes = floor(n_days)*24*60
         for key, value in self.lunar_cyc.items():
             # the key is the moon and the value is the cycle in minutes
-            incomplete_phase = int(n_minutes) % value
+            incomplete_phase = floor(n_minutes) % value
             if incomplete_phase == 0:
                 # then 
-                incomplete_phase = value
-            phase_length = int(value/len(moon_phases))
+                phase_list.append((key, moon_phases[0]))
+                continue
+            phase_length = floor(value/len(moon_phases))
             phase = incomplete_phase // phase_length
-            phase = int(phase)
+            phase = floor(phase)
             if phase == 8:
                 phase = 7
             phase_list.append((key, moon_phases[phase]))
@@ -106,8 +108,8 @@ class Calendar:
         for moon in phase_list:
             moon_name = moon[0]
             # moon_days = moon[1]
-            moon_cycle_str = moon[2][0]
-            moon_cycle_emo = moon[2][1]
+            moon_cycle_str = moon[1][0]
+            moon_cycle_emo = moon[1][1]
             formatted_string += f"{moon_name} is in the {moon_cycle_emo}  ({moon_cycle_str}) phase\n"
         return formatted_string
 
