@@ -19,7 +19,7 @@ class Calendar(object):
     """Calendar class - for each guild"""
 
     def __init__(self, guild_id):
-        guild_data = session.query(Guild).filter_by(guild=guild_id).first()
+        guild_data = self.get_guild(guild_id)
         self.guild = guild_data.guild
         self.first_day = guild_data.first_day
         self.current_day = guild_data.current_day
@@ -32,35 +32,6 @@ class Calendar(object):
         if month_dict.get('days') == 1:
             return f"{name}"
         return f"day {day} of {name}, {alternate_name}"
-
-    # def current_date(self, n_days):
-    #     """Get current date."""
-    #     full_leap_cycles = n_days // self.leap_cycle_days
-    #     remainder = n_days % self.leap_cycle_days
-    #     years_so_far = int(full_leap_cycles*self.leap_year_freq)
-    #     if remainder == 0:
-    #         last_month_year = self.months[-1]
-    #         self.leap_year = True
-    #         self.day_of_year =  remainder
-    #         return (years_so_far, Calendar.format_days(last_month_year, last_month_year.get("days")))
-    #     counter = 1
-    #     while remainder > self.year_len:
-    #         if counter == self.leap_year_freq:
-    #             self.leap_year = True
-    #             break
-    #         remainder -= self.year_len
-    #         years_so_far += 1
-    #         counter += 1
-    #     self.day_of_year = remainder
-    #     for month in self.months:
-    #         days_in_month = month.get("days")
-    #         if month.get("leap") and self.leap_year is False:
-    #             continue
-    #         if remainder > days_in_month:
-    #             remainder -= days_in_month
-    #         else:
-    #             self.current_month = month
-    #             return (years_so_far, Calendar.format_days(month, remainder))
 
     def get_date(self, n_days=0, current_adjusted=True):
         """Get day. If current_adjusted=True add current day"""
@@ -142,7 +113,7 @@ class Calendar(object):
         day_value = getattr(self, day_type)
         day_value += n_days
         setattr(self, day_type, day_value)
-        guild = session.query(Guild).filter_by(guild=self.guild).first()
+        guild = self.get_guild(self.guild)
         setattr(guild, day_type, day_value)
         session.commit()
 
@@ -163,3 +134,11 @@ class Calendar(object):
             days_in_year = self.year_len
         days_left = days_in_year - self.day_of_year + self.holidays[0].get("date")
         return (days_left, self.holidays[0])
+
+    ############### Helper Functions ###############
+    @staticmethod
+    def get_guild(guild_id):
+        """guild_id -> Return Guild DB object."""
+        guild = session.query(Guild).filter_by(guild=guild_id).first()
+        return guild
+

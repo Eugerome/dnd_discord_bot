@@ -62,6 +62,11 @@ async def moon(ctx, *, days=0):
     message = calendar.string_moon(calendar.current_moons(days))
     await ctx.send(message)
 
+@client.command()
+async def howlong(ctx):
+    calendar = Calendar(ctx.guild.id)
+    await ctx.send(f"It has been {calendar.days_since_start()} days since your adventure began.")
+
 ############### Admin commands ###############
 @client.command()
 @commands.has_permissions(administrator=True)
@@ -91,6 +96,19 @@ async def startday(ctx, *, days):
     logging.info("Start Day changed successfully")
     await ctx.send(f"Start date changed to:\n {calendar.day_as_str(calendar.first_day, False)}")
 
+@client.command()
+@commands.has_permissions(administrator=True)
+async def setstart(ctx, *, days):
+    """Change current day by n. n can be positive/negative."""
+    try:
+        days = int(days)
+    except:
+        logging.info("Non int passed")
+        await ctx.send(f"Sorry, please provide valid integers")
+    calendar = Calendar(ctx.guild.id)
+    calendar.add_days(days)
+    logging.info("Current Day changed successfully")
+    await ctx.send(f"Current date changed!\n Today is the {calendar.day_as_str()}")
 
 
 # @client.command()
@@ -119,11 +137,6 @@ async def startday(ctx, *, days):
 #         for key, value in holidays.items():
 #             message += f"{key} - Day {value}"
 #     await ctx.send(message)
-
-@client.command()
-async def howlong(ctx):
-    calendar = Calendar(ctx.guild.id)
-    await ctx.send(f"It has been {calendar.days_since_start()} days since your adventure began.")
 
 # @client.command()
 # async def holiday(ctx):
