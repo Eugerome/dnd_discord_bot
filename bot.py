@@ -42,30 +42,56 @@ async def on_ready():
 
 @client.command()
 async def today(ctx):
+    """Get the current date."""
     calendar = Calendar(ctx.guild.id)
-    message = calendar.day_as_str()
-    logging.info("Sending current date")
+    message = f"Today is the {calendar.day_as_str()}"
     await ctx.send(message)
 
 @client.command()
-@commands.has_permissions(administrator=True)
-async def days(ctx, *, days):
-    try:
-        days = int(days)
-    except:
-        logging.info("Non int passed")
-        await ctx.send(f"Sorry, could not understand '{days}'")
+async def firstday(ctx):
+    """Get the current date."""
     calendar = Calendar(ctx.guild.id)
-    calendar.add_days(days)
-    logging.info("Days added successfully")
-    await ctx.send(f"Current date changed!\n {calendar.day_as_str()}")
+    message = f"The adventure started on the {calendar.day_as_str(calendar.first_day, False)}"
+    await ctx.send(message)
 
 @client.command()
 async def moon(ctx, *, days=0):
+    """Get the current moon phase."""
     calendar = Calendar(ctx.guild.id)
     days = calendar.current_day + int(days)
     message = calendar.string_moon(calendar.current_moons(days))
     await ctx.send(message)
+
+############### Admin commands ###############
+@client.command()
+@commands.has_permissions(administrator=True)
+async def days(ctx, *, days):
+    """Change current day by n. n can be positive/negative."""
+    try:
+        days = int(days)
+    except:
+        logging.info("Non int passed")
+        await ctx.send(f"Sorry, please provide valid integers")
+    calendar = Calendar(ctx.guild.id)
+    calendar.add_days(days)
+    logging.info("Current Day changed successfully")
+    await ctx.send(f"Current date changed!\n Today is the {calendar.day_as_str()}")
+
+@client.command()
+@commands.has_permissions(administrator=True)
+async def startday(ctx, *, days):
+    """Change first day by n. n can be positive/negative."""
+    try:
+        days = int(days)
+    except:
+        logging.info("Non int passed")
+        await ctx.send(f"Sorry, please provide valid integers")
+    calendar = Calendar(ctx.guild.id)
+    calendar.add_days(days, "first_day")
+    logging.info("Start Day changed successfully")
+    await ctx.send(f"Start date changed to:\n {calendar.day_as_str(calendar.first_day, False)}")
+
+
 
 # @client.command()
 # async def month(ctx):

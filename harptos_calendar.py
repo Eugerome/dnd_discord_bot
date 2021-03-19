@@ -62,10 +62,11 @@ class Calendar(object):
     #             self.current_month = month
     #             return (years_so_far, Calendar.format_days(month, remainder))
 
-    def get_date(self, n_days=0):
-        """Get day (combine with current date)"""
+    def get_date(self, n_days=0, current_adjusted=True):
+        """Get day. If current_adjusted=True add current day"""
         leap_year = False
-        n_days += self.current_day
+        if current_adjusted:
+            n_days += self.current_day
         full_leap_cycles = n_days // self.leap_cycle_days
         remainder = n_days % self.leap_cycle_days
         years_so_far = int(full_leap_cycles*self.leap_year_freq)
@@ -131,26 +132,18 @@ class Calendar(object):
         """Returns how many days have passed since start date."""
         return self.current_day - self.first_day
 
-    def day_as_str(self, n_days=0):
-        today = self.get_date(n_days)
-        day = today[0]
-        month = today[1]
-        year = today[-1]
+    def day_as_str(self, n_days=0, current_adjusted=True):
+        day, month, year = self.get_date(n_days, current_adjusted)
         if month.get("days") == 1:
-            return f"Today is {month.get('name')}, Year {year} DR."
-        return f"Today is the {day}{ordinal(day)} of {month.get('name')}, {month.get('alternate')}, Year {year} DR"
-
-    def calculate_day_delta(self, year_delta=0, day_delta=0):
-        """Convert years + days into days."""
-        y_days = 0
-        if year_delta:
-            y_days = self.year_len*year_delta + (year_delta // self.leap_year_freq)*(self.leap_year_len-self.year_len)
-        return y_days + day_delta
-        
-    def add_days(self, n_days):
-        self.current_day += n_days
+            return f"{month.get('name')}, Year {year} DR."
+        return f"{day}{ordinal(day)} of {month.get('name')}, {month.get('alternate')}, Year {year} DR"
+      
+    def add_days(self, n_days, day_type="current_day"):
+        day_value = getattr(self, day_type)
+        day_value += n_days
+        setattr(self, day_type, day_value)
         guild = session.query(Guild).filter_by(guild=self.guild).first()
-        guild.current_day = self.current_day
+        setattr(guild, day_type, day_value)
         session.commit()
 
     def closest_holiday(self):
