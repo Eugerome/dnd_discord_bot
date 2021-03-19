@@ -1,11 +1,12 @@
 import json
+from math import floor, ceil
 
 
 class Calendar:
     """Calendar class"""
 
     def __init__(self):
-        with open("calendar.json") as json_file:
+        with open("data/harptos_calendar.json") as json_file:
             calendar_dict = json.load(json_file)
         for key, value in calendar_dict.items():
             setattr(self, key, value)
@@ -82,29 +83,39 @@ class Calendar:
 
     def current_moons(self, n_days):
         """Get current moon phase."""
-        moon_phases = [("New Moon", "🌑"), ("Waning Crescent", "🌘"), ("Third Quarter", "🌗"), ("Waning Gibbous", "🌖"), ("Full Moon", "🌕"), ("Waxing Gibbous", "🌔"), ("First Quarter", "🌓"), ("Waxing Crescent", "🌒")]
-        phase_list = []
+        moon_phases = [("Full Moon", "🌕"), ("Waxing Gibbous", "🌔"), ("First Quarter", "🌓"), ("Waxing Crescent", "🌒"), ("New Moon", "🌑"), ("Waning Crescent", "🌘"), ("Third Quarter", "🌗"), ("Waning Gibbous", "🌖")]
+        phase_dict = {}
+        # convert days to minutes
+        n_minutes = floor(n_days)*24*60
         for key, value in self.lunar_cyc.items():
-            incomplete_phase = n_days % value
+            # the key is the moon and the value is the cycle in minutes
+            incomplete_phase = floor(n_minutes) % value
             if incomplete_phase == 0:
-                incomplete_phase = value
-            phase_length = int(value/len(moon_phases))
+                # then 
+                phase_dict[key] = {
+                    "name": moon_phases[0][0],
+                    "emoji": moon_phases[0][1],
+                    "next_full": ceil((value-incomplete_phase)/(24*60))
+                }
+                continue
+            phase_length = floor(value/len(moon_phases))
             phase = incomplete_phase // phase_length
-            phase = int(phase)
+            phase = floor(phase)
             if phase == 8:
                 phase = 7
-            phase_list.append((key, incomplete_phase, moon_phases[phase]))
-        return phase_list
+            # days until next full moon
+            phase_dict[key] = {
+                "name": moon_phases[phase][0],
+                "emoji": moon_phases[phase][1],
+                "next_full": ceil((value-incomplete_phase)/(24*60))
+            }
+        return phase_dict
 
-    def string_moon(self, phase_list):
+    def string_moon(self, phase_dict):
         """Return moon phases as string"""
         formatted_string = ""
-        for moon in phase_list:
-            moon_name = moon[0]
-            moon_days = moon[1]
-            moon_cycle_str = moon[2][0]
-            moon_cycle_emo = moon[2][1]
-            formatted_string += f"{moon_name}: Day {moon_days} of cycle in the {moon_cycle_emo}  ({moon_cycle_str}) phase\n"
+        for key, value in phase_dict.items():
+            formatted_string += f"* {key} is in the {value['name']} {value['emoji']} phase. It is {value['next_full']} days until the next Full Moon.\n"
         return formatted_string
 
     def days_since_start(self):
@@ -117,10 +128,10 @@ class Calendar:
 
     def add_days(self, n_days):
         self.current_day += n_days
-        with open("calendar.json","r+") as json_file:
+        with open("data/harptos_calendar.json","r+") as json_file:
             data = json.load(json_file)
             data["current_day"] = self.current_day
-        with open("calendar.json", 'w') as f:
+        with open("data/harptos_calendar.json", 'w') as f:
             json.dump(data, f, indent=4)
         self.today = self.current_date(self.current_day)
 
@@ -141,24 +152,3 @@ class Calendar:
             days_in_year = self.year_len
         days_left = days_in_year - self.day_of_year + self.holidays[0].get("date")
         return (days_left, self.holidays[0])
-
-    def create_custom_event(self, day, name, notes):
-        """Creates a custom event."""
-        year, date = self.get_date(day)
-        event_dict = {
-            "day" : day - self.first_day + 1,
-            "name": name,
-            "notes": notes,
-            "date": f"{date.title()}, Year {self.start_year + year}"
-        }
-        self.events.append(event_dict)
-        self.events = sorted(self.events, key = lambda i: i['day'])
-        with open("events.json", 'w') as f:
-            json.dump(self.events, f, indent=4)
-        return event_dict
-
-    def get_custom_events(self, n_events):
-        """Returns n recent events."""
-        if len(self.events) <= n_events:
-            return self.events
-        return self.events[-1*n_events]

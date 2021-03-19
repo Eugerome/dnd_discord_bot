@@ -1,5 +1,6 @@
 **/__pycache__
 **/.devcontainer
+**/.vscode
 token.txt
 bot.log
 settings.json

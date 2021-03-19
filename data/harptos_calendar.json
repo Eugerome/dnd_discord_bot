@@ -1,0 +1,243 @@
+{
+    "year_len": 365,
+    "leap_year_len": 366,
+    "leap_year_freq": 4,
+    "holidays": [
+        {
+            "name": "Midwinter Festival",
+            "celebrated": null,
+            "date": 31
+        },
+        {
+            "name": "Spring Equinox",
+            "celebrated": null,
+            "date": 80
+        },
+        {
+            "name": "GreenGrass Festival",
+            "celebrated": null,
+            "date": 122
+        },
+        {
+            "name": "Festival of Remembering",
+            "celebrated": null,
+            "date": 160
+        },
+        {
+            "name": "Summer Solstice",
+            "celebrated": null,
+            "date": 172
+        },
+        {
+            "name": "Midsummer Festival",
+            "celebrated": null,
+            "date": 213
+        },
+        {
+            "name": "Shieldmeet",
+            "celebrated": null,
+            "date": 214
+        },
+        {
+            "name": "Autumn Equinox",
+            "celebrated": null,
+            "date": 265
+        },
+        {
+            "name": "Highharvestide Festival",
+            "celebrated": null,
+            "date": 275
+        },
+        {
+            "name": "Feast of the Moon",
+            "celebrated": null,
+            "date": 336
+        },
+        {
+            "name": "Winter Solstice",
+            "celebrated": null,
+            "date": 337
+        }
+    ],
+    "months": [
+        {
+            "name": "Hammer",
+            "alternate": "Deepwinter",
+            "sign": "badger",
+            "leap": false,
+            "holidays": {},
+            "days": 30
+        },
+        {
+            "name": "Midwinter",
+            "alternate": null,
+            "sign": "boar",
+            "leap": false,
+            "holidays": {
+                "Midwinter Festival": 1
+            },
+            "days": 1
+        },
+        {
+            "name": "Alturak",
+            "alternate": "The Claw of Winter",
+            "sign": "Spider",
+            "leap": false,
+            "holidays": {},
+            "days": 30
+        },
+        {
+            "name": "Ches",
+            "alternate": "The Claw of Sunsets",
+            "sign": "serpent",
+            "leap": false,
+            "holidays": {
+                "Spring Equinox": 19
+            },
+            "days": 30
+        },
+        {
+            "name": "Tarsakh",
+            "alternate": "The Claw of Storms",
+            "sign": "panter",
+            "leap": false,
+            "holidays": {},
+            "days": 30
+        },
+        {
+            "name": "Greengrass",
+            "alternate": null,
+            "sign": "elk",
+            "leap": false,
+            "holidays": {
+                "GreenGrass Festival": 1
+            },
+            "days": 1
+        },
+        {
+            "name": "Mirtul",
+            "alternate": "The Melting",
+            "sign": "fox",
+            "leap": false,
+            "holidays": {},
+            "days": 30
+        },
+        {
+            "name": "Kythorn",
+            "alternate": "The Time of Flowers",
+            "sign": "moth",
+            "leap": false,
+            "holidays": {
+                "Festival of Remembering": 8,
+                "Summer Solstice": 20
+            },
+            "days": 30
+        },
+        {
+            "name": "Flamerule",
+            "alternate": "summertide",
+            "sign": "salamander",
+            "leap": false,
+            "holidays": {},
+            "days": 30
+        },
+        {
+            "name": "Midsummer",
+            "alternate": null,
+            "sign": "albatross",
+            "leap": false,
+            "holidays": {
+                "Midsummer": 1
+            },
+            "days": 1
+        },
+        {
+            "name": "Shieldmeet",
+            "alternate": null,
+            "sign": "owl",
+            "leap": true,
+            "holidays": {
+                "Shieldmeet": 1
+            },
+            "days": 1
+        },
+        {
+            "name": "Eleasis",
+            "alternate": "Highsun",
+            "sign": "owl",
+            "leap": false,
+            "holidays": {},
+            "days": 30
+        },
+        {
+            "name": "Eleint",
+            "alternate": "The Fading",
+            "sign": "eagle",
+            "leap": false,
+            "holidays": {
+                "Autumn Equinox": 21
+            },
+            "days": 30
+        },
+        {
+            "name": "Highharvestide",
+            "alternate": null,
+            "sign": "raven",
+            "leap": false,
+            "holidays": {
+                "Highharvestide Festival": 1
+            },
+            "days": 1
+        },
+        {
+            "name": "Marpenoth",
+            "alternate": "Leaffall",
+            "sign": "praying mantis",
+            "leap": false,
+            "holidays": {},
+            "days": 30
+        },
+        {
+            "name": "Uktar",
+            "alternate": "The Rotting",
+            "sign": "falcon",
+            "leap": false,
+            "holidays": {},
+            "days": 30
+        },
+        {
+            "name": "Feast of the Moon",
+            "alternate": null,
+            "sign": "wolf",
+            "leap": false,
+            "holidays": {
+                "Feast of the Moon": 1
+            },
+            "days": 1
+        },
+        {
+            "name": "Nightal",
+            "alternate": "The Drawing Down",
+            "sign": "bear",
+            "leap": false,
+            "holidays": {
+                "Winter Solstice": 1
+            },
+            "days": 30
+        }
+    ],
+    "week_len": 10,
+    "moons": [
+        "Selune"
+    ],
+    "lunar_cyc": {
+        "Selune": 43830
+    },
+    "year": 0,
+    "first_day": 0,
+    "current_day": 1,
+    "notes": {},
+    "start_year": 0,
+    "n_current": 1,
+    "str_current": ""
+}

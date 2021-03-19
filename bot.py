@@ -20,7 +20,7 @@ logging.basicConfig(
     )
 
 # get bot token
-with open('token.txt', 'r') as reader:
+with open('data/token.txt', 'r') as reader:
     token = reader.read()
     logging.info("Token Retrieved")
 
@@ -51,9 +51,8 @@ async def days(ctx, *, days):
     await ctx.send(f"Current date changed!\n {calendar.today_as_str()}")
 
 @client.command()
-async def moon(ctx, *, days=None):
-    if not days:
-        days = calendar.current_day
+async def moon(ctx, *, days=0):
+    days = calendar.current_day + int(days)
     message = calendar.string_moon(calendar.current_moons(days))
     await ctx.send(message)
 
