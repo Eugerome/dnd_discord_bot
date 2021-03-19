@@ -3,9 +3,9 @@ import json
 import random
 import time
 
-with open("weather.json") as json_file:
+with open("data/weather.json") as json_file:
     weather_dict = json.load(json_file)
-with open("weather_records.json") as json_file:
+with open("data/weather_records.json") as json_file:
     weather_records = json.load(json_file)
 
 
@@ -46,7 +46,7 @@ class DailyForecast:
 
     def save_temp(self):
         weather_records[str(self.day)] = {"temp": self.avg_temp, "forecast": self.forecast_string}
-        with open("weather_records.json", 'w') as f:
+        with open("data/weather_records.json", 'w') as f:
             json.dump(weather_records, f, indent=4)
 
 class Forecast():

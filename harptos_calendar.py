@@ -5,7 +5,7 @@ class Calendar:
     """Calendar class"""
 
     def __init__(self):
-        with open("harptos_calendar.json") as json_file:
+        with open("data/harptos_calendar.json") as json_file:
             calendar_dict = json.load(json_file)
         for key, value in calendar_dict.items():
             setattr(self, key, value)
@@ -121,10 +121,10 @@ class Calendar:
 
     def add_days(self, n_days):
         self.current_day += n_days
-        with open("harptos_calendar.json","r+") as json_file:
+        with open("data/harptos_calendar.json","r+") as json_file:
             data = json.load(json_file)
             data["current_day"] = self.current_day
-        with open("harptos_calendar.json", 'w') as f:
+        with open("data/harptos_calendar.json", 'w') as f:
             json.dump(data, f, indent=4)
         self.today = self.current_date(self.current_day)
 
