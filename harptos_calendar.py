@@ -124,7 +124,15 @@ class Calendar:
 
     def today_as_str(self):
         year, day = self.today
-        return f"Today is {day}, Year {self.start_year + year}"
+        return f"Today is {day}, Year {self.start_year + year} DR"
+
+    def calculate_day_delta(self, year_delta=0, day_delta=0):
+        """Convert years + days into days."""
+        y_days = 0
+        if year_delta:
+            y_days = self.year_len*year_delta + (year_delta // self.leap_year_freq)*(self.leap_year_len-self.year_len)
+        return y_days + day_delta
+        
 
     def add_days(self, n_days):
         self.current_day += n_days

@@ -20,7 +20,7 @@ class Guild(Base):
     first_day = Column(Integer)
     current_day = Column(Integer)
 
-    def __init__(self, guild, first_day=1, current_day=1):
+    def __init__(self, guild, first_day=546048, current_day=546048):
 
         self.guild = guild
         self.first_day = first_day

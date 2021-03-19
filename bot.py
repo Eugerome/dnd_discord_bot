@@ -32,8 +32,13 @@ client = commands.Bot(command_prefix=".")
 async def on_ready():
     """Run on Start"""
     logging.info("Bot is Ready")
-    # for guild in session.query(Guild).all():
-    #     logging.info(guild.guild)
+    # create DB for existing guilds
+    # for guild in client.guilds:
+    #     guild = Guild(guild.id)
+    #     session.add(guild)
+    #     session.commit()
+    for guild in session.query(Guild).all():
+        logging.info(guild.guild)
 
 @client.command()
 async def today(ctx):
