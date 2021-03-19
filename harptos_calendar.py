@@ -107,7 +107,6 @@ class Calendar:
         formatted_string = ""
         for moon in phase_list:
             moon_name = moon[0]
-            # moon_days = moon[1]
             moon_cycle_str = moon[1][0]
             moon_cycle_emo = moon[1][1]
             formatted_string += f"{moon_name} is in the {moon_cycle_emo}  ({moon_cycle_str}) phase\n"
