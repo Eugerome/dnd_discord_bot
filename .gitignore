@@ -1,6 +1,7 @@
 **/__pycache__
 **/.devcontainer
 **/.vscode
+guilds.db
 token.txt
 bot.log
 settings.json

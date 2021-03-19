@@ -4,6 +4,7 @@ import json
 
 from discord.ext import commands
 
+from database import Guild, session
 from harptos_calendar import Calendar
 from weather import *
 
@@ -31,6 +32,8 @@ client = commands.Bot(command_prefix=".")
 async def on_ready():
     """Run on Start"""
     logging.info("Bot is Ready")
+    # for guild in session.query(Guild).all():
+    #     logging.info(guild.guild)
 
 @client.command()
 async def today(ctx):
@@ -109,3 +112,4 @@ async def weather(ctx, *, days=0):
     await ctx.send(message)
 
 client.run(token)
+
