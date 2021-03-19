@@ -232,12 +232,5 @@
     ],
     "lunar_cyc": {
         "Selune": 43830
-    },
-    "year": 0,
-    "first_day": 0,
-    "current_day": 1,
-    "notes": {},
-    "start_year": 0,
-    "n_current": 1,
-    "str_current": ""
+    }
 }

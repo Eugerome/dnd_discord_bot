@@ -1,21 +1,29 @@
 import json
 from math import floor, ceil
+from inflection import ordinal
 
+from database import session, Guild
 
-class Calendar:
-    """Calendar class"""
+def apply_defaults(cls):
+    """Populate default values based on harptos calendar."""
+    with open("data/harptos_calendar.json") as json_file:
+        calendar_dict = json.load(json_file)
+    for key, value in calendar_dict.items():
+        setattr(cls, key, value)
+    # calculate leap cycle length
+    setattr(cls, "leap_cycle_days", cls.year_len*(cls.leap_year_freq-1)+cls.leap_year_len)
+    return cls
 
-    def __init__(self):
-        with open("data/harptos_calendar.json") as json_file:
-            calendar_dict = json.load(json_file)
-        for key, value in calendar_dict.items():
-            setattr(self, key, value)
-        self.leap_cycle_days = (self.leap_year_freq - 1) * self.year_len + self.leap_year_len
-        self.day_of_year = None 
-        self.leap_year = None
-        self.current_month = None
-        # run current_date
-        self.today = self.current_date(self.current_day)
+@apply_defaults
+class Calendar(object):
+    """Calendar class - for each guild"""
+
+    def __init__(self, guild_id):
+        guild_data = session.query(Guild).filter_by(guild=guild_id).first()
+        self.guild = guild_data.guild
+        self.first_day = guild_data.first_day
+        self.current_day = guild_data.current_day
+        self.leap_year = guild_data.leap_year
 
     @staticmethod
     def format_days(month_dict, day):
@@ -25,45 +33,46 @@ class Calendar:
             return f"{name}"
         return f"day {day} of {name}, {alternate_name}"
 
-    def current_date(self, n_days):
-        """Get current date."""
-        full_leap_cycles = n_days // self.leap_cycle_days
-        remainder = n_days % self.leap_cycle_days
-        years_so_far = int(full_leap_cycles*4)
-        if remainder == 0:
-            last_month_year = self.months[-1]
-            self.leap_year = True
-            self.day_of_year =  remainder
-            return (years_so_far, Calendar.format_days(last_month_year, last_month_year.get("days")))
-        counter = 1
-        while remainder > self.year_len:
-            if counter == self.leap_year_freq:
-                self.leap_year = True
-                break
-            remainder -= self.year_len
-            years_so_far += 1
-            counter += 1
-        self.day_of_year = remainder
-        for month in self.months:
-            days_in_month = month.get("days")
-            if month.get("leap") and self.leap_year is False:
-                continue
-            if remainder > days_in_month:
-                remainder -= days_in_month
-            else:
-                self.current_month = month
-                return (years_so_far, Calendar.format_days(month, remainder))
+    # def current_date(self, n_days):
+    #     """Get current date."""
+    #     full_leap_cycles = n_days // self.leap_cycle_days
+    #     remainder = n_days % self.leap_cycle_days
+    #     years_so_far = int(full_leap_cycles*self.leap_year_freq)
+    #     if remainder == 0:
+    #         last_month_year = self.months[-1]
+    #         self.leap_year = True
+    #         self.day_of_year =  remainder
+    #         return (years_so_far, Calendar.format_days(last_month_year, last_month_year.get("days")))
+    #     counter = 1
+    #     while remainder > self.year_len:
+    #         if counter == self.leap_year_freq:
+    #             self.leap_year = True
+    #             break
+    #         remainder -= self.year_len
+    #         years_so_far += 1
+    #         counter += 1
+    #     self.day_of_year = remainder
+    #     for month in self.months:
+    #         days_in_month = month.get("days")
+    #         if month.get("leap") and self.leap_year is False:
+    #             continue
+    #         if remainder > days_in_month:
+    #             remainder -= days_in_month
+    #         else:
+    #             self.current_month = month
+    #             return (years_so_far, Calendar.format_days(month, remainder))
 
-    def get_date(self, n_days):
+    def get_date(self, n_days=0):
         """Get day (combine with current date)"""
         leap_year = False
+        n_days += self.current_day
         full_leap_cycles = n_days // self.leap_cycle_days
         remainder = n_days % self.leap_cycle_days
-        years_so_far = int(full_leap_cycles*4)
+        years_so_far = int(full_leap_cycles*self.leap_year_freq)
         if remainder == 0:
             last_month_year = self.months[-1]
             leap_year = True
-            return (years_so_far, Calendar.format_days(last_month_year, last_month_year.get("days")))
+            return (last_month_year.get("days"), last_month_year, years_so_far)
         counter = 1
         while remainder > self.year_len:
             if counter == self.leap_year_freq:
@@ -79,7 +88,7 @@ class Calendar:
             if remainder > days_in_month:
                 remainder -= days_in_month
             else:
-                return (years_so_far, Calendar.format_days(month, remainder))
+                return (remainder, month, years_so_far)
 
     def current_moons(self, n_days):
         """Get current moon phase."""
@@ -122,9 +131,14 @@ class Calendar:
         """Returns how many days have passed since start date."""
         return self.current_day - self.first_day
 
-    def today_as_str(self):
-        year, day = self.today
-        return f"Today is {day}, Year {self.start_year + year} DR"
+    def day_as_str(self, n_days=0):
+        today = self.get_date(n_days)
+        day = today[0]
+        month = today[1]
+        year = today[-1]
+        if month.get("days") == 1:
+            return f"Today is {month.get('name')}, Year {year} DR."
+        return f"Today is the {day}{ordinal(day)} of {month.get('name')}, {month.get('alternate')}, Year {year} DR"
 
     def calculate_day_delta(self, year_delta=0, day_delta=0):
         """Convert years + days into days."""
@@ -133,7 +147,6 @@ class Calendar:
             y_days = self.year_len*year_delta + (year_delta // self.leap_year_freq)*(self.leap_year_len-self.year_len)
         return y_days + day_delta
         
-
     def add_days(self, n_days):
         self.current_day += n_days
         with open("data/harptos_calendar.json","r+") as json_file:
